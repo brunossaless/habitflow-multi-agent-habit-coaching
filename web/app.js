@@ -184,6 +184,31 @@ function formatMetrics(metrics) {
   return pills.map((p) => `<span class="metric-pill">${p}</span>`).join("");
 }
 
+function renderActionHero(primary) {
+  if (!primary) return "";
+  const dir = primary.direction || "maintain";
+  const dirLabel = { increase: "Aumentar", decrease: "Reduzir", maintain: "Manter" }[dir] || "Agir";
+  const catLabel = {
+    exercise: "Exercício", water: "Água", sleep: "Sono",
+    recovery: "Recuperação", data: "Registro", general: "Geral",
+  }[primary.category] || primary.category || "Geral";
+  return `
+    <div class="action-hero action-hero--${dir}">
+      <div class="action-hero__icon">${primary.icon || "🎯"}</div>
+      <div class="action-hero__body">
+        <div class="action-hero__eyebrow">Melhor ação para você agora</div>
+        <div class="action-hero__title">${primary.title}</div>
+        <div class="action-hero__action">${primary.action}</div>
+        <div class="action-hero__reason">${primary.reasoning}</div>
+      </div>
+      <div class="action-hero__meta">
+        <span class="action-hero__badge action-hero__badge--${dir}">${dirLabel}</span>
+        <span class="action-hero__badge action-hero__badge--cat">${catLabel}</span>
+        ${primary.confidence ? `<span class="action-hero__conf">${Math.round(primary.confidence * 100)}% confiança</span>` : ""}
+      </div>
+    </div>`;
+}
+
 function renderFinalResult(data) {
   const panel = el("#resultPanel");
   const out = el("#finalOutput");
@@ -194,6 +219,7 @@ function renderFinalResult(data) {
   const doneCards = Object.values(state.cards).filter((c) => c.column === "done");
   const metrics = findCardResult("analyzer-agent")?.metrics || {};
   const coach = data.coach_result || findCardResult("coach-agent");
+  const primary = coach?.primary_action || data.coach_result?.primary_action;
   const guardian = data.guardian_result || findCardResult("guardian-agent");
   const collector = findCardResult("collector-agent");
 
@@ -212,7 +238,9 @@ function renderFinalResult(data) {
     }).join("");
   }
 
-  let html = '<div class="result-grid">';
+  let html = renderActionHero(primary);
+
+  html += '<div class="result-grid">';
 
   if (Object.keys(metrics).length) {
     html += `<div class="result-card"><h3>🔍 Analyzer</h3><div>${formatMetrics(metrics)}</div></div>`;
@@ -229,9 +257,12 @@ function renderFinalResult(data) {
   }
 
   if (coach?.suggestions?.length) {
-    html += `<div class="result-card"><h3>💡 Coach — Sugestões</h3><ul>${coach.suggestions.map((s) =>
-      `<li class="priority-${s.priority || "medium"}">• ${s.action}</li>`
-    ).join("")}</ul></div>`;
+    const extra = coach.suggestions.filter((s) => s.action !== primary?.action);
+    if (extra.length) {
+      html += `<div class="result-card"><h3>💡 Outras sugestões</h3><ul>${extra.map((s) =>
+        `<li class="priority-${s.priority || "medium"}">• ${s.action}</li>`
+      ).join("")}</ul></div>`;
+    }
   }
 
   if (guardian) {
@@ -243,9 +274,9 @@ function renderFinalResult(data) {
 
   html += "</div>";
 
-  if (data.final_message) {
+  if (data.final_message && !primary) {
     html += `<div class="result-card"><h3>📲 Mensagem final</h3><div class="result-message">${data.final_message}</div></div>`;
-  } else if (!Object.keys(metrics).length && !coach?.insights?.length) {
+  } else if (!primary && !Object.keys(metrics).length && !coach?.insights?.length) {
     html += `<div class="result-message">Pipeline executado com sucesso.</div>`;
   }
 

@@ -4,7 +4,7 @@ const AGENTS = {
   coordinator:       { id: "coordinator",       name: "Coordenador",  role: "Orquestrador",     color: "var(--coordinator)", icon: "🎯" },
   "collector-agent": { id: "collector-agent", name: "Collector",    role: "Check-in",         color: "var(--collector)",   icon: "📝" },
   "analyzer-agent":  { id: "analyzer-agent",  name: "Analyzer",     role: "Métricas / NLP",   color: "var(--analyzer)",    icon: "🔍" },
-  "coach-agent":     { id: "coach-agent",     name: "Coach",        role: "Insights / RAG",   color: "var(--coach)",       icon: "🧠" },
+  "coach-agent":     { id: "coach-agent",     name: "Coach",        role: "Recomendações",   color: "var(--coach)",       icon: "🧠" },
   "guardian-agent":  { id: "guardian-agent",  name: "Guardian",     role: "Saúde / LGPD",   color: "var(--guardian)",    icon: "🛡️" },
   "notifier-agent":  { id: "notifier-agent",  name: "Notifier",     role: "Feedback",       color: "var(--notifier)",    icon: "📲" },
 };

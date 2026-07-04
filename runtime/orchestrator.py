@@ -179,7 +179,11 @@ def _build_payload(agent_id: str, ctx: Dict[str, Any]) -> Dict[str, Any]:
         habit = ctx["entries"][0]["habit_id"] if ctx["entries"] else "general"
         return {"note": note, "habit_id": habit}
     if agent_id == "coach-agent":
-        return {"user_id": ctx["user_id"]}
+        return {
+            "user_id": ctx["user_id"],
+            "current_metrics": ctx.get("metrics", {}),
+            "current_note": ctx.get("note", ""),
+        }
     if agent_id == "guardian-agent":
         return {
             "suggestions": ctx.get("suggestions", []),
@@ -189,6 +193,7 @@ def _build_payload(agent_id: str, ctx: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "insights": ctx.get("insights", []),
             "suggestions": ctx.get("suggestions", []),
+            "primary_action": ctx.get("primary_action"),
         }
     return ctx
 
@@ -199,6 +204,7 @@ def _merge_context(ctx: Dict[str, Any], agent_id: str, result: Dict[str, Any]) -
     if agent_id == "coach-agent":
         ctx["insights"] = result.get("insights", [])
         ctx["suggestions"] = result.get("suggestions", [])
+        ctx["primary_action"] = result.get("primary_action")
     if agent_id == "notifier-agent":
         ctx["final_message"] = result.get("message", "")
 

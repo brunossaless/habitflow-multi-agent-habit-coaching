@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runtime.executors import execute_analyzer, execute_guardian, seed_demo_logs
+from runtime.executors import execute_analyzer, execute_coach, execute_guardian, seed_demo_logs
 from runtime.orchestrator import HabitOrchestrator
 
 
@@ -22,6 +22,32 @@ def test_guardian_blocks_unsafe_sleep():
         "user_notes": "",
     })
     assert result["approved"] is False
+
+
+def test_coach_recommends_more_water():
+    seed_demo_logs("coach-water-test")
+    result = execute_coach({
+        "user_id": "coach-water-test",
+        "current_metrics": {"water_liters": 1.0},
+        "current_note": "Bebi 1L de água",
+    })
+    assert result["primary_action"]["category"] == "water"
+    assert result["primary_action"]["direction"] == "increase"
+    assert "água" in result["primary_action"]["title"].lower()
+
+
+def test_coach_recommends_run_more_with_history():
+    seed_demo_logs("coach-run-test")
+    result = execute_coach({
+        "user_id": "coach-run-test",
+        "current_metrics": {"distance_km": 2.0},
+        "current_note": "Corri 2km",
+    })
+    action = result["primary_action"]
+    assert action["direction"] in ("increase", "decrease", "maintain")
+    assert action["title"]
+    assert action["action"]
+    assert "primary_action" in result
 
 
 def test_full_pipeline_checkin():
@@ -48,4 +74,5 @@ def test_analysis_pipeline():
         mode="analysis",
     )
     assert result.get("coach_result") is not None
+    assert result["coach_result"].get("primary_action") is not None
     assert len(result["events"]) > 10
