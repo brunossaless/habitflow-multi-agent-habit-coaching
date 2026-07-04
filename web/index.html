@@ -57,18 +57,6 @@
           <div id="mcpPulse" class="mcp-pulse"></div>
         </div>
       </section>
-
-      <section class="panel panel--checklist">
-        <h2>✅ O que a aula pediu</h2>
-        <ul class="checklist" id="checklist">
-          <li data-item="cards">Agent Cards (ficha de cada agente)</li>
-          <li data-item="coordinator">Coordenador que delega tarefas</li>
-          <li data-item="specialists">Especialistas que executam cards</li>
-          <li data-item="mcp">MCP Server (tools compartilhadas)</li>
-          <li data-item="a2a">A2A (agentes conversam entre si)</li>
-          <li data-item="kanban">Kanban visual com quem executou</li>
-        </ul>
-      </section>
     </aside>
 
     <!-- Área principal -->
@@ -90,26 +78,31 @@
         <div id="board" class="columns"></div>
       </section>
 
-      <div class="bottom-row">
-        <section class="panel panel--comms">
-          <div class="comms-head">
-            <h2>📡 Comunicação</h2>
-            <div class="tabs">
-              <button class="tab active" data-tab="a2a">A2A <span class="tab-count" id="countA2A">0</span></button>
-              <button class="tab" data-tab="mcp">MCP <span class="tab-count" id="countMCP">0</span></button>
-              <button class="tab" data-tab="exec">Exec <span class="tab-count" id="countExec">0</span></button>
-            </div>
+      <section class="panel panel--result hidden" id="resultPanel">
+        <div class="result-head">
+          <div>
+            <h2>🎯 Resultado do time</h2>
+            <p class="result-sub">Resumo do trabalho conjunto dos agentes</p>
           </div>
-          <ul id="logA2A" class="log active" data-log="a2a"></ul>
-          <ul id="logMCP" class="log" data-log="mcp"></ul>
-          <ul id="logExec" class="log" data-log="exec"></ul>
-        </section>
+          <span class="result-badge" id="resultBadge"></span>
+        </div>
+        <div id="agentTrail" class="agent-trail"></div>
+        <div id="finalOutput" class="final-output"></div>
+      </section>
 
-        <section class="panel panel--result hidden" id="resultPanel">
-          <h2>💬 Feedback do Coach</h2>
-          <div id="finalOutput" class="final-output"></div>
-        </section>
-      </div>
+      <section class="panel panel--comms">
+        <div class="comms-head">
+          <h2>📡 Comunicação</h2>
+          <div class="tabs">
+            <button class="tab active" data-tab="a2a">A2A <span class="tab-count" id="countA2A">0</span></button>
+            <button class="tab" data-tab="mcp">MCP <span class="tab-count" id="countMCP">0</span></button>
+            <button class="tab" data-tab="exec">Exec <span class="tab-count" id="countExec">0</span></button>
+          </div>
+        </div>
+        <ul id="logA2A" class="log active" data-log="a2a"></ul>
+        <ul id="logMCP" class="log" data-log="mcp"></ul>
+        <ul id="logExec" class="log" data-log="exec"></ul>
+      </section>
     </div>
   </main>
 

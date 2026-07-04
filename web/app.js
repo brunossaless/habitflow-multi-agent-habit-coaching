@@ -169,8 +169,89 @@ function appendLog(channel, ev) {
   logEl.scrollTop = logEl.scrollHeight;
 }
 
-function markChecklist() {
-  document.querySelectorAll(".checklist li").forEach((li) => li.classList.add("done"));
+function findCardResult(agentId) {
+  return Object.values(state.cards)
+    .filter((c) => c.column === "done" && c.executedBy === agentId && c.result)
+    .map((c) => c.result)[0];
+}
+
+function formatMetrics(metrics) {
+  if (!metrics || !Object.keys(metrics).length) return "";
+  const pills = [];
+  if (metrics.distance_km != null) pills.push(`${metrics.distance_km} km`);
+  if (metrics.duration_min != null) pills.push(`${metrics.duration_min} min`);
+  if (metrics.water_liters != null) pills.push(`${metrics.water_liters} L água`);
+  return pills.map((p) => `<span class="metric-pill">${p}</span>`).join("");
+}
+
+function renderFinalResult(data) {
+  const panel = el("#resultPanel");
+  const out = el("#finalOutput");
+  const trail = el("#agentTrail");
+  const badge = el("#resultBadge");
+  if (!panel || !out) return;
+
+  const doneCards = Object.values(state.cards).filter((c) => c.column === "done");
+  const metrics = findCardResult("analyzer-agent")?.metrics || {};
+  const coach = data.coach_result || findCardResult("coach-agent");
+  const guardian = data.guardian_result || findCardResult("guardian-agent");
+  const collector = findCardResult("collector-agent");
+
+  const contributors = doneCards
+    .filter((c) => c.executedBy && AGENTS[c.executedBy])
+    .map((c) => c.executedBy)
+    .filter((id, i, arr) => arr.indexOf(id) === i);
+
+  if (badge) badge.textContent = `✓ ${doneCards.length} tarefa${doneCards.length !== 1 ? "s" : ""} concluída${doneCards.length !== 1 ? "s" : ""}`;
+
+  if (trail) {
+    trail.innerHTML = contributors.map((id, i) => {
+      const a = AGENTS[id];
+      const arrow = i < contributors.length - 1 ? '<span class="trail-arrow">→</span>' : "";
+      return `<span class="trail-step" style="--dot:${a.color}"><span class="icon">${a.icon}</span>${a.name}</span>${arrow}`;
+    }).join("");
+  }
+
+  let html = '<div class="result-grid">';
+
+  if (Object.keys(metrics).length) {
+    html += `<div class="result-card"><h3>🔍 Analyzer</h3><div>${formatMetrics(metrics)}</div></div>`;
+  }
+
+  if (collector?.entries_saved) {
+    html += `<div class="result-card"><h3>📝 Collector</h3><ul><li>Check-in salvo com ${collector.entries_saved} entrada(s)</li></ul></div>`;
+  }
+
+  if (coach?.insights?.length) {
+    html += `<div class="result-card"><h3>🧠 Coach — Insights</h3><ul>${coach.insights.map((i) =>
+      `<li>• ${i.pattern} <span class="priority-low">(${Math.round((i.confidence || 0) * 100)}%)</span></li>`
+    ).join("")}</ul></div>`;
+  }
+
+  if (coach?.suggestions?.length) {
+    html += `<div class="result-card"><h3>💡 Coach — Sugestões</h3><ul>${coach.suggestions.map((s) =>
+      `<li class="priority-${s.priority || "medium"}">• ${s.action}</li>`
+    ).join("")}</ul></div>`;
+  }
+
+  if (guardian) {
+    const ok = guardian.approved !== false;
+    const cls = ok ? "guardian-ok" : "guardian-block";
+    const label = ok ? "✅ Aprovado pelo Guardian" : "❌ Bloqueado pelo Guardian";
+    html += `<div class="result-card"><h3>🛡️ Guardian</h3><ul><li class="${cls}">${label}</li>${guardian.warnings?.length ? guardian.warnings.map((w) => `<li>• ${w}</li>`).join("") : ""}</ul></div>`;
+  }
+
+  html += "</div>";
+
+  if (data.final_message) {
+    html += `<div class="result-card"><h3>📲 Mensagem final</h3><div class="result-message">${data.final_message}</div></div>`;
+  } else if (!Object.keys(metrics).length && !coach?.insights?.length) {
+    html += `<div class="result-message">Pipeline executado com sucesso.</div>`;
+  }
+
+  out.innerHTML = html;
+  panel.classList.remove("hidden");
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function playEvent(ev) {
@@ -217,7 +298,6 @@ async function runPipeline(input) {
     refreshBoard(data.board || {});
     el("#statEvents").textContent = state.events.length;
     state.idx = 0;
-    markChecklist();
     await playNextEvent(data);
   } catch (err) {
     appendLog("a2a", { from_: "system", kind: "error", text: String(err) });
@@ -229,10 +309,7 @@ function playNextEvent(sprintData) {
   return new Promise((resolve) => {
     if (state.idx >= state.events.length) {
       if (sprintData?.board) refreshBoard(sprintData.board);
-      if (sprintData?.final_message) {
-        el("#finalOutput").textContent = sprintData.final_message;
-        el("#resultPanel")?.classList.remove("hidden");
-      }
+      renderFinalResult(sprintData || {});
       setAgentActive(null);
       setProgress(100);
       setStatus("● concluído", "pill--done");
@@ -277,7 +354,6 @@ function clearLogs() {
   ["#logA2A", "#logMCP", "#logExec"].forEach((s) => { const l = el(s); if (l) l.innerHTML = ""; });
   state.counts = { a2a: 0, mcp: 0, exec: 0 };
   ["#countA2A", "#countMCP", "#countExec"].forEach((s) => { const c = el(s); if (c) c.textContent = "0"; });
-  document.querySelectorAll(".checklist li").forEach((li) => li.classList.remove("done"));
 }
 
 function setupTabs() {
@@ -324,6 +400,8 @@ document.addEventListener("DOMContentLoaded", () => {
     state.events = []; state.idx = 0; state.running = false;
     clearLogs(); renderBoard();
     el("#resultPanel")?.classList.add("hidden");
+    el("#finalOutput").innerHTML = "";
+    el("#agentTrail").innerHTML = "";
     el("#progressWrap")?.classList.add("hidden");
     setAgentActive(null); setStatus("● pronto", "pill--live");
     el("#statDone").textContent = "0";
