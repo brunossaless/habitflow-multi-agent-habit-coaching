@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HabitFlow Team — Multi-Agente</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo-wrap">🌿</div>
+      <div>
+        <h1>HabitFlow Team</h1>
+        <p class="sub">Diário de hábitos · Time multi-agente · MCP + A2A</p>
+      </div>
+    </div>
+    <div class="controls">
+      <span class="pill pill--live" id="statusPill">● pronto</span>
+      <button id="btnStep" class="btn">Passo ▸</button>
+      <button id="btnRun" class="btn btn-primary">▶ Rodar Pipeline</button>
+      <button id="btnReset" class="btn btn-ghost">⟲ Reiniciar</button>
+    </div>
+  </header>
+
+  <div class="progress-wrap hidden" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+    <span class="progress-label" id="progressLabel">0%</span>
+  </div>
+
+  <main class="layout">
+    <!-- Coluna esquerda -->
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>📝 Entrada do usuário</h2>
+        <form id="inputForm" class="card-form">
+          <textarea id="fInput" rows="3" placeholder="Ex: Corri 5km e bebi 2L de água" required>Corri 5km em 32 minutos e bebi 2L de água</textarea>
+          <div class="mode-select">
+            <label><input type="radio" name="mode" value="auto" checked /> Automático</label>
+            <label><input type="radio" name="mode" value="checkin" /> Check-in</label>
+            <label><input type="radio" name="mode" value="analysis" /> Análise semanal</label>
+          </div>
+          <div class="quick-chips" id="quickChips"></div>
+          <button type="submit" class="btn btn-primary full">▶ Executar pipeline</button>
+        </form>
+      </section>
+
+      <section class="panel panel--team">
+        <h2>👥 Equipe de agentes</h2>
+        <div id="agents" class="agents"></div>
+        <div class="mcp-node" id="mcpNode">
+          <div class="mcp-icon">⚡</div>
+          <div>
+            <div class="mcp-title">MCP · HabitFlow Kanban</div>
+            <div class="mcp-sub">board.get · card.create · card.assign · card.move · activity.log</div>
+          </div>
+          <div id="mcpPulse" class="mcp-pulse"></div>
+        </div>
+      </section>
+
+      <section class="panel panel--checklist">
+        <h2>✅ O que a aula pediu</h2>
+        <ul class="checklist" id="checklist">
+          <li data-item="cards">Agent Cards (ficha de cada agente)</li>
+          <li data-item="coordinator">Coordenador que delega tarefas</li>
+          <li data-item="specialists">Especialistas que executam cards</li>
+          <li data-item="mcp">MCP Server (tools compartilhadas)</li>
+          <li data-item="a2a">A2A (agentes conversam entre si)</li>
+          <li data-item="kanban">Kanban visual com quem executou</li>
+        </ul>
+      </section>
+    </aside>
+
+    <!-- Área principal -->
+    <div class="main-area">
+      <section class="panel panel--board">
+        <div class="board-header">
+          <h2>📋 Pipeline Kanban</h2>
+          <div class="stats" id="stats">
+            <span class="stat"><strong id="statDone">0</strong> done</span>
+            <span class="stat"><strong id="statEvents">0</strong> evt</span>
+          </div>
+        </div>
+        <div class="flow-diagram">
+          <span>Usuário</span><span class="flow-arrow">→</span>
+          <span class="flow-node flow-node--coord">Coordenador</span><span class="flow-arrow">⇄</span>
+          <span class="flow-node flow-node--spec">Especialistas</span><span class="flow-arrow">→</span>
+          <span class="flow-node flow-node--mcp">MCP</span>
+        </div>
+        <div id="board" class="columns"></div>
+      </section>
+
+      <div class="bottom-row">
+        <section class="panel panel--comms">
+          <div class="comms-head">
+            <h2>📡 Comunicação</h2>
+            <div class="tabs">
+              <button class="tab active" data-tab="a2a">A2A <span class="tab-count" id="countA2A">0</span></button>
+              <button class="tab" data-tab="mcp">MCP <span class="tab-count" id="countMCP">0</span></button>
+              <button class="tab" data-tab="exec">Exec <span class="tab-count" id="countExec">0</span></button>
+            </div>
+          </div>
+          <ul id="logA2A" class="log active" data-log="a2a"></ul>
+          <ul id="logMCP" class="log" data-log="mcp"></ul>
+          <ul id="logExec" class="log" data-log="exec"></ul>
+        </section>
+
+        <section class="panel panel--result hidden" id="resultPanel">
+          <h2>💬 Feedback do Coach</h2>
+          <div id="finalOutput" class="final-output"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header">
+        <span class="modal-agent" id="modalAgent"></span>
+        <h3 id="modalTitle">Resultado</h3>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="simulation.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

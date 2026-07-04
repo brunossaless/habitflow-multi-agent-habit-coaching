@@ -1,0 +1,14 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "HabitFlow Coordinator",
+  "description": "Orchestrates the habit coaching pipeline — triages cards and delegates to specialists.",
+  "url": "https://habitflow.local/a2a/coordinator",
+  "preferredTransport": "JSONRPC",
+  "version": "1.0.0",
+  "capabilities": { "streaming": true, "pushNotifications": true },
+  "skills": [
+    { "id": "backlog.triage", "name": "Habit Task Triage", "tags": ["habits", "routing"] },
+    { "id": "card.route", "name": "Card Routing", "tags": ["orchestration"] },
+    { "id": "sprint.track", "name": "Pipeline Tracking", "tags": ["kanban"] }
+  ]
+}

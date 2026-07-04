@@ -1,0 +1,12 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Personal Habit Coach",
+  "description": "Analyzes patterns and generates personalized habit coaching.",
+  "url": "https://habitflow.local/a2a/coach",
+  "version": "1.0.0",
+  "skills": [
+    { "id": "patterns.detect", "name": "Pattern Detection" },
+    { "id": "insights.generate", "name": "Insight Generation" },
+    { "id": "suggestions.create", "name": "Micro-habit Suggestions" }
+  ]
+}

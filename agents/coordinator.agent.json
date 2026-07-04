@@ -1,0 +1,25 @@
+{
+  "id": "coordinator",
+  "name": "HabitFlow Coordinator",
+  "version": "1.0.0",
+  "role": "orchestrator",
+  "routing": {
+    "collect": "collector-agent",
+    "checkin": "collector-agent",
+    "persist": "collector-agent",
+    "extract": "analyzer-agent",
+    "metrics": "analyzer-agent",
+    "nlp": "analyzer-agent",
+    "coach": "coach-agent",
+    "insights": "coach-agent",
+    "patterns": "coach-agent",
+    "rag": "coach-agent",
+    "guardian": "guardian-agent",
+    "safety": "guardian-agent",
+    "compliance": "guardian-agent",
+    "notify": "notifier-agent",
+    "feedback": "notifier-agent",
+    "push": "notifier-agent"
+  },
+  "allowedMcpTools": ["board.get", "card.create", "card.assign", "card.move", "card.comment", "activity.log"]
+}

@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Health Guardian",
+  "description": "Validates safety of coach recommendations and audits decisions.",
+  "url": "https://habitflow.local/a2a/guardian",
+  "version": "1.0.0",
+  "skills": [
+    { "id": "health.validate", "name": "Health Guardrails" },
+    { "id": "audit.log", "name": "Immutable Audit" }
+  ]
+}

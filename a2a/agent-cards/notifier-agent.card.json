@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Habit Notifier",
+  "description": "Delivers approved coaching feedback to the user.",
+  "url": "https://habitflow.local/a2a/notifier",
+  "version": "1.0.0",
+  "skills": [
+    { "id": "notify.push", "name": "Push Notification" },
+    { "id": "feedback.deliver", "name": "Feedback Delivery" }
+  ]
+}

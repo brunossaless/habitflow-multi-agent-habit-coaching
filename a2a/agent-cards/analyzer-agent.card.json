@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Habit Analyzer",
+  "description": "Extracts structured metrics from free-text habit notes.",
+  "url": "https://habitflow.local/a2a/analyzer",
+  "version": "1.0.0",
+  "skills": [
+    { "id": "metrics.extract", "name": "Metric Extraction" },
+    { "id": "text.parse", "name": "NLP Parsing" }
+  ]
+}

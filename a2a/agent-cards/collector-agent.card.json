@@ -1,0 +1,11 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "Habit Collector",
+  "description": "Captures and persists daily habit check-ins.",
+  "url": "https://habitflow.local/a2a/collector",
+  "version": "1.0.0",
+  "skills": [
+    { "id": "habit.capture", "name": "Capture Check-in" },
+    { "id": "habit.persist", "name": "Persist to Storage" }
+  ]
+}
